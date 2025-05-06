@@ -114,6 +114,18 @@ class Music(commands.Cog):
 
         return ctx.voice_client
     
+    # Function to check if the URL is a YouTube playlist or live stream
+    async def _is_valid_video(self, info):
+        # Check if it's a playlist
+        if 'entries' in info:
+            return False
+        
+        # Check if it's a live stream
+        if info.get('is_live', False):
+            return False
+        
+        return True
+
     # Fetch YouTube video info safely
     async def _fetch_youtube_info(self, url):
         """Fetch YouTube video info safely."""
@@ -128,7 +140,12 @@ class Music(commands.Cog):
         
         try:
             with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+                
                 info = ydl.extract_info(url, download=False)
+                
+                if not await self._is_valid_video(info):
+                    return None
+                
                 logger.debug(f"Fetched info for URL: {url}")
                 return {
                     'title': info.get('title'),
