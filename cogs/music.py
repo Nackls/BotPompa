@@ -29,8 +29,8 @@ class Music(commands.Cog):
             return
         
         await self.song_queue.put((ctx, url))
-        await ctx.send("Added song to queu: {url}.")
-        logger.info(f"Added song to queu: {url}")
+        await ctx.send(f"Added song to queue: {url}.")
+        logger.info(f"Added song to queue: {url}")
     
         if not vc.is_playing():
             await self._play_songs(vc)
@@ -59,7 +59,7 @@ class Music(commands.Cog):
             info = await self._fetch_youtube_info(url)
             if info is None:
                 await ctx.send("❌ Error fetching song. Skipping.")
-                logger.warning(f"Failed to fetch seng info for: {url}")
+                logger.warning(f"Failed to fetch song info for: {url}")
                 continue
 
             FFMPEG_OPTIONS = {
@@ -116,6 +116,7 @@ class Music(commands.Cog):
     
     # Function to check if the URL is a YouTube playlist or live stream
     async def _is_valid_video(self, info):
+        """Check if the information from a Youtube URL and validates only single video URLs"""
         # Check if it's a playlist
         if 'entries' in info:
             return False
